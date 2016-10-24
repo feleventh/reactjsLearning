@@ -42,6 +42,8 @@ input,button,textarea{
     border: none;
     padding: .5rem;
     margin: .5rem;
+    text-align: right;
+    font-size: 2rem;
   }
 }
 .key-container{
@@ -56,14 +58,15 @@ button{
   border-radius: .4rem;
   background: #fff;
   font-size: 2rem;
-  &.key-0{
+  cursor: pointer;
+}
+.key-wrap{
+  position: absolute;
+  top: .5rem;
+  left: 0;
+  width: 20rem;
+  height: 20rem;
+  .key-clear,.key-enter,.key-0{
     width: 10rem;
   }
-}
-.key-num-wrap{
-  position: absolute;
-  top: 5rem;
-  left: 0;
-  width: 15rem;
-  height: 20rem;
 }

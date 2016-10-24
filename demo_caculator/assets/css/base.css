@@ -39,7 +39,9 @@ input, button, textarea {
     height: 4rem;
     border: none;
     padding: .5rem;
-    margin: .5rem; }
+    margin: .5rem;
+    text-align: right;
+    font-size: 2rem; }
 
 .key-container {
   width: 20rem;
@@ -52,15 +54,16 @@ button {
   box-shadow: inset 0 0 .4rem .5rem #666;
   border-radius: .4rem;
   background: #fff;
-  font-size: 2rem; }
-  button.key-0 {
-    width: 10rem; }
+  font-size: 2rem;
+  cursor: pointer; }
 
-.key-num-wrap {
+.key-wrap {
   position: absolute;
-  top: 5rem;
+  top: .5rem;
   left: 0;
-  width: 15rem;
+  width: 20rem;
   height: 20rem; }
+  .key-wrap .key-clear, .key-wrap .key-enter, .key-wrap .key-0 {
+    width: 10rem; }
 
 /*# sourceMappingURL=base.css.map */

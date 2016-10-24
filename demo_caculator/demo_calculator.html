@@ -21,23 +21,53 @@
 <script type="text/babel">
   var Key = React.createClass({
     render: function () {
-      var keyNum = [7,8,9,4,5,6,1,2,3,0,'·'];
+      var keyNum = ['clear','=',7,8,9,'/',4,5,6,'*',1,2,3,'-',0,'.','+'];
       var keyNumDom = keyNum.map(function (ele, index) {
-        var cName = "key-"+ele;
-        if(ele === '·'){
-          cName = "key-dot";
+        var cName = '';
+        if(typeof ele === 'number'||ele === '.'){
+          cName = 'key-num';
+          if(ele === 0){
+            cName = 'key-num key-0'
+          }
+        }else{
+          if(ele ==='clear'){
+            cName = 'key-clear';
+          }
+          else if(ele === '='){
+            cName = 'key-enter';
+          }
+          else{
+            cName = 'key-operation';
+          }
         }
         var handleClick = function(event){
-          $('.screen input').val(event.target.innerHTML);
-        }
+          var input = $('.screen input');
+          var key = event.target;
+          if($(key).hasClass('key-num')){
+            input.val(input.val()+key.innerHTML);
+          }
+          else if($(key).hasClass('key-operation')){
+            if(input.val() === ''){
+              input.val('0'+' '+key.innerHTML+' ');
+            }else{
+              input.val(input.val()+' '+key.innerHTML+' ');
+            }
+          }
+          else if($(key).hasClass('key-clear')){
+            input.val('');
+          }
+          else if($(key).hasClass('key-enter')){
+            input.val(eval(input.val()));
+          }
+        };
         return (
                 <button key={index} className={cName} onClick={handleClick}>{ele}</button>
         );
        });
-      return <div className="key-num-wrap">{keyNumDom}</div>;
+      return <div className="key-wrap">{keyNumDom}</div>;
     }
   });
 
-  ReactDOM.render(<Key/>, document.querySelector('.key-container'));
+  ReactDOM.render(<Key></Key>, document.querySelector('.key-container'));
 </script>
 </html>
