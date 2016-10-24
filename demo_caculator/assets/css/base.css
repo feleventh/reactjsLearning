@@ -27,7 +27,13 @@ input, button, textarea {
   padding: 1rem;
   width: 20rem;
   height: 33rem;
-  margin: 0 auto; }
+  margin: 2rem auto; }
+  .page::after {
+    content: 'feleventh';
+    display: block;
+    position: absolute;
+    top: .5rem;
+    right: .5rem; }
 
 .screen {
   width: 20rem;
