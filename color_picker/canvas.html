@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Title</title>
+</head>
+<body>
+<canvas id="ex1"></canvas>
+<script src="../build/jquery.min.js"></script>
+<script>
+  var canvas  = $("#ex1")[0];
+  var context = canvas.getContext("2d");
+
+  var width  = 360;
+  var height = 180;
+  var imgData = context.createImageData(width, height);
+  for (var i=0;i<imgData.data.length;i=i+4)
+    {
+      /*var x = (i%400)/99;
+      var y = parseInt(i/400)/99;*/
+      imgData.data[i+0]=0
+      imgData.data[i+1]=22;
+      imgData.data[i+2]=255;
+      imgData.data[i+3]=255;
+    }
+  context.putImageData(imgData,0,0);
+  console.log(imgData.data.length);
+</script>
+</body>
+</html>
