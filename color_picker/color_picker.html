@@ -15,7 +15,50 @@
 
 </div>
 <script type="text/babel">
+  function hslToRgb(h, s, l){
+    var r, g, b;
 
+    if(s == 0){
+      r = g = b = l; // achromatic
+    }else{
+      var hue2rgb = function hue2rgb(p, q, t){
+        if(t < 0) t += 1;
+        if(t > 1) t -= 1;
+        if(t < 1/6) return p + (q - p) * 6 * t;
+        if(t < 1/2) return q;
+        if(t < 2/3) return p + (q - p) * (2/3 - t) * 6;
+        return p;
+      }
+
+      var q = l < 0.5 ? l * (1 + s) : l + s - l * s;
+      var p = 2 * l - q;
+      r = hue2rgb(p, q, h + 1/3);
+      g = hue2rgb(p, q, h);
+      b = hue2rgb(p, q, h - 1/3);
+    }
+
+    return [Math.round(r * 255), Math.round(g * 255), Math.round(b * 255)];
+  }
+  function rgbToHsl(r, g, b){
+    r /= 255, g /= 255, b /= 255;
+    var max = Math.max(r, g, b), min = Math.min(r, g, b);
+    var h, s, l = (max + min) / 2;
+
+    if(max == min){
+      h = s = 0; // achromatic
+    }else{
+      var d = max - min;
+      s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
+      switch(max){
+        case r: h = (g - b) / d + (g < b ? 6 : 0); break;
+        case g: h = (b - r) / d + 2; break;
+        case b: h = (r - g) / d + 4; break;
+      }
+      h /= 6;
+    }
+
+    return [h, s, l];
+  }
   var renderBlockColor = function(rgba){
     var canvas = $('.color-block')[0];
     var context = canvas.getContext('2d');
@@ -27,7 +70,7 @@
       var x = (i%(360*4))/(360*4);//0-359
       var y = parseInt(i/(360*4))/179;//0-179
       imgData.data[i+0]=(255*(1-x)+rgba[0]*x)*(1-y);
-      imgData.data[i+1]=(255*(1-x)+rgba[1]*x)*(1-y);/*255*(1-y);*/
+      imgData.data[i+1]=(255*(1-x)+rgba[1]*x)*(1-y);
       imgData.data[i+2]=(255*(1-x)+rgba[2]*x)*(1-y);
       imgData.data[i+3]=rgba[3];
     }
@@ -40,7 +83,9 @@
         rgba:[0,255,255,255],
         value: 768,
         alpha: 255,
-        switchColor: '#888',/*#123edf*/
+        pickRgba:[0,255,255,255],
+        x: 359,
+        y: 179,
       };
     },
     handleRgbChange: function(event){
@@ -49,7 +94,6 @@
       var alpha = this.state.alpha;
       var color = '';
       var rgb = [];
-      console.log(rangeVal);
       if(rangeVal<=255) {
         color = 'rgb(255,0,'+rangeVal+')';
         rgb = [255,0,rangeVal];
@@ -69,10 +113,7 @@
         color = 'rgb(255,'+(255*6-rangeVal)+',0)';
         rgb = [255,255*6-rangeVal,0];
       }
-
       console.log(color);
-      console.log(this.state.colorData.length);
-
       var rgba = rgb.concat([alpha]);
       renderBlockColor(rgba);
       this.setState({rgba:rgba});
@@ -84,62 +125,71 @@
       rgba[3] = alpha;
       renderBlockColor(rgba);
       this.setState({rgba:rgba});
+      if(alpha<255&&!$('.hex').hasClass('hide')){
+        $('.hex').addClass('hide').next().removeClass('hide');
+      }
     },
-    handleSwitch:function (event) {
-      var switchColor = event.target.getAttribute('fill');
-      var isOn =
-      switchColor ===
-              event.target.setAttribute('fill','#e22')
-      console.log(event.target.getAttribute('fill'));
-//      this.setState({switch:event.target.fill})
+    handlePickerWrapClick: function (event) {
+      var e = event || window.event;
+      var scrollX = document.documentElement.scrollLeft || document.body.scrollLeft;
+      var scrollY = document.documentElement.scrollTop || document.body.scrollTop;
+      var x = e.pageX || e.clientX + scrollX;
+      var y = e.pageY || e.clientY + scrollY;
+      var canvasX = $('.color-picker-wrap').offset().left;
+      var canvasY = $('.color-picker-wrap').offset().top;
+      //alert('x: ' + x + '\ny: ' + y);
+      x = x-canvasX;
+      y = y-canvasY;
+      console.log('x: ' + x + '\ny: ' + y);
+      $('.color-picker').css({left:x-6,top:y-6});
+
+      var rgba = this.state.rgba;
+      var pickR = parseInt((255*(1-x/359)+rgba[0]*x/359)*(1-y/179));
+      var pickG = parseInt((255*(1-x/359)+rgba[1]*x/359)*(1-y/179));
+      var pickB = parseInt((255*(1-x/359)+rgba[2]*x/359)*(1-y/179));
+      var color = 'rgba('+pickR+ ','+pickG+ ','+pickB+','+rgba[3]+')';
+      $('.circle').css('background',color);
+      this.setState({x:x,y:y});
+    },
+    handleSwitch: function(event){
+//      console.log(this.state.alpha);
+      var inputValue = event.target.value;
+      log(inputValue);
+      var index = $('.color-show li').index($('.color-show li:not(.hide)'));
+      index===2?index=0:index++;
+      if(this.state.alpha!==255){
+        index===0?index=1:null;
+      }
+      console.log(index);
+      $('.color-show li').eq(index).removeClass('hide').siblings('li').addClass('hide');
+    },
+    handleColorChange: function(){
+      var index = $('.color-show li').index($('.color-show li:not(.hide)'));
+      console.log(index);
     },
     componentDidMount: function() {
-      var canvas = $('.color-block')[0];
-      var context = canvas.getContext('2d');
-      var width = 360;
-      var height = 180;
-      var imgData = context.createImageData(width,height);
-      console.log(imgData);
-      if (this.isMounted()) {
-        this.setState({
-          colorData:imgData.data
-        });
-//        console.log('pixel:'+imgData.data.length/4+' '+360*180);
-      }
-
-      for (var i=0;i<imgData.data.length;i=i+4)
-      {
-        var x = (i%(360*4))/(360*4);//0-359
-        var y = parseInt(i/(360*4))/179;//0-179
-        imgData.data[i+0]=(255*(1-x)+0*x)*(1-y);
-        imgData.data[i+1]=(255*(1-x)+255*x)*(1-y);/*255*(1-y);*/
-        imgData.data[i+2]=(255*(1-x)+255*x)*(1-y);
-        imgData.data[i+3]=255;
-      }
-      /*console.log(imgData.data[0]+','+imgData.data[1]+','+imgData.data[2]+'xx'+
-              imgData.data[358*4]+','+imgData.data[358*4-1]+','+imgData.data[358*4-2]+' xx'+
-              imgData.data[imgData.data.length-4]+','+imgData.data[imgData.data.length-3]+','+imgData.data[imgData.data.length-2]);*/
-      context.putImageData(imgData,0,0);
-      /*for (var i=0;i<356*4;i=i+4){
-        console.log(i/4+"  :  "+imgData.data[i+0]+" "+imgData.data[i+1]+" "+imgData.data[i+2]+'/n');
-      }
-      for (var i=64800*4-356*4;i<64800*4;i=i+4){
-        console.log(i/4+"  :  "+imgData.data[i+0]+" "+imgData.data[i+1]+" "+imgData.data[i+2]+'/n');
-      }*/
-
+      renderBlockColor([0,255,255,255])
     },
     render: function () {
       var value = this.state.value;
       var alpha = this.state.alpha;
       var rgba = this.state.rgba;
-      var switchColor = this.state.switchColor;
-      var color = 'rgba('+rgba[0]+','+rgba[1]+','+rgba[2]+','+rgba[3]+')';
+      var x = this.state.x;
+      var y = this.state.y;
+      var pickR = parseInt((255*(1-x/359)+rgba[0]*x/359)*(1-y/179));
+      var pickG = parseInt((255*(1-x/359)+rgba[1]*x/359)*(1-y/179));
+      var pickB = parseInt((255*(1-x/359)+rgba[2]*x/359)*(1-y/179));
+      var color = 'rgba('+pickR+ ','+pickG+ ','+pickB+','+rgba[3]+')';
+//      var hex = '#'+pickR.toString(16)+pickG.toString(16)+pickB.toString(16);
+      var hex = "#0ff";
       return <div className="color-wrap">
         <canvas className="color-block"></canvas>
-        <div className="color-picker"></div>
+        <div className="color-picker-wrap" onClick = {this.handlePickerWrapClick}>
+          <div className="color-picker"></div>
+        </div>
         <div className="mask"></div>
         <div className="color-switch">
-          <svg className="icon"  viewBox="0 0 1024 1024" width="20" height="20" fill={switchColor} onClick = {this.handleSwitch}>
+          <svg className="icon"  viewBox="0 0 1024 1024" width="20" height="20" fill={color}>
             <path d="M825.196613 278.276576c15.172154-15.172154 15.172154-39.736595 0-54.908749L798.344309 196.515522c-15.172154-15.172154-39.736595-15.172154-54.908749 0l-65.866416 65.866416 81.761054 81.761054L825.196613 278.276576z">
             </path>
             <path d="M831.337723 416.752587l-226.378175-226.378175c-11.800564-11.800564-30.946378-11.800564-42.746943 0l-79.954845 79.954845c-11.800564 11.800564-11.800564 30.946378 0 42.746943l46.35936 46.35936L201.452493 686.479774c-20.109125 20.109125-20.109125 52.620884 0 72.730009l67.672625 67.672625c20.109125 20.109125 52.620884 20.109125 72.730009 0l327.164628-327.164628 39.495767 39.495767c11.800564 11.800564 30.946378 11.800564 42.746943 0l79.954845-79.954845C843.138288 447.578551 843.138288 428.553151 831.337723 416.752587zM333.185325 804.605833c-15.533396 15.533396-40.699906 15.533396-56.233302 0l-52.982126-52.982126c-15.533396-15.533396-15.533396-40.699906 0-56.233302L544.270931 374.968956l109.215428 109.215428L333.185325 804.605833z">
@@ -147,13 +197,35 @@
             <path d="M201.813735 803.040452c0 13.125118 10.596425 23.721543 23.721543 23.721543l42.506115 0-66.227658-66.227658L201.813735 803.040452z">
             </path>
           </svg>
-          <div className="circle" style={{background:color}}></div>
+          <div className="circle" style={{background: 'rgba(0,255,255,1)'}}></div>
         </div>
         <input className="rgb-range" type="range" min="0" step="1" max="1535" value={value} onChange={this.handleRgbChange} />
         <input className="alpha-range" type="range" min="0" step="1" max="255" value={alpha} onChange={this.handleAlphaChange} />
+        <ul className="color-show">
+          <li className="hex">
+            <input type="text" value={hex} onChange={this.handleColorChange} />
+            <p>HEX</p>
+          </li>
+          <li className="rgba hide">
+            <input type="text" value={hex} onChange={this.handleColorChange} />
+            <input type="text" value={hex} onChange={this.handleColorChange} />
+            <input type="text" value={hex} onChange={this.handleColorChange} />
+            <input type="text" value={hex} onChange={this.handleColorChange} />
+            <p><span>R</span><span>G</span><span>B</span><span>A</span></p>
+          </li>
+          <li className="hsla hide">
+            <input type="text" value={hex} onChange={this.handleColorChange} />
+            <input type="text" value={hex} onChange={this.handleColorChange} />
+            <input type="text" value={hex} onChange={this.handleColorChange} />
+            <input type="text" value={hex} onChange={this.handleColorChange} />
+            <p><span>H</span><span>S</span><span>L</span><span>A</span></p>
+          </li>
+        </ul>
+        <svg className="switch" viewBox="0 0 1024 1024"  width="24" height="24" fill="#515151" onClick={this.handleSwitch}>
+          <path d="M512 859.615l-260.711-260.711h521.422z"></path><path d="M512 164.385l-260.711 260.711h521.422z"></path>
+        </svg>
       </div>;
-    },
-
+    }
   });
   ReactDOM.render(<ColorWrap></ColorWrap>, document.querySelector('.container'));
 </script>

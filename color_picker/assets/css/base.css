@@ -14,6 +14,9 @@ body {
 input, button, textarea {
   outline: none; }
 
+.hide {
+  display: none !important; }
+
 .container {
   position: absolute;
   top: 0;
@@ -25,17 +28,22 @@ input, button, textarea {
   width: 360px;
   margin: 20px auto;
   position: relative;
-  box-shadow: 0 0 0 1px #ccc;
-  padding-bottom: 20px; }
-  .color-wrap .color-picker {
+  box-shadow: 0 0 0 1px #ccc; }
+  .color-wrap .color-picker-wrap {
     position: absolute;
-    width: 16px;
-    height: 16px;
-    border-radius: 50%;
-    top: 0px;
-    left: 340px;
-    box-shadow: 0 0 0 1px #ccc;
-    background: red; }
+    top: 0;
+    left: 0;
+    width: 360px;
+    height: 180px;
+    overflow: hidden; }
+    .color-wrap .color-picker-wrap .color-picker {
+      position: absolute;
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      top: -6px;
+      left: 353px;
+      box-shadow: 0 0 0 1px #ccc; }
   .color-wrap .color-block {
     width: 360px;
     height: 180px; }
@@ -50,7 +58,6 @@ input, button, textarea {
       width: 20px;
       height: 20px;
       border-radius: 50%;
-      background: #fff;
       box-shadow: 0 0 0 1px #ddd; }
     .color-wrap .color-switch .icon {
       width: 20px;
@@ -58,6 +65,41 @@ input, button, textarea {
       position: absolute;
       top: 0;
       left: 0; }
+  .color-wrap .switch {
+    width: 24px;
+    height: 24px;
+    position: absolute;
+    top: 257px;
+    right: 25px; }
+  .color-wrap .color-show {
+    list-style: none;
+    width: 320px;
+    height: 40px;
+    margin: 15px auto; }
+    .color-wrap .color-show li {
+      margin: 5px auto;
+      width: 306px; }
+    .color-wrap .color-show input {
+      height: 16px;
+      text-align: center; }
+    .color-wrap .color-show p {
+      text-align: center;
+      width: 276px;
+      margin-top: 2px; }
+    .color-wrap .color-show .hex input {
+      width: 48px;
+      padding: 0 112px; }
+    .color-wrap .color-show .rgba input, .color-wrap .color-show .hsla input {
+      width: 34px;
+      padding: 0 8px;
+      margin-right: 20px; }
+    .color-wrap .color-show .rgba span, .color-wrap .color-show .hsla span {
+      float: left;
+      display: block;
+      width: 54px;
+      margin-right: 20px; }
+      .color-wrap .color-show .rgba span:last-child, .color-wrap .color-show .hsla span:last-child {
+        margin-right: 0; }
   .color-wrap input[type="range"] {
     display: block;
     width: 256px;

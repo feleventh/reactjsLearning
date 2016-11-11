@@ -14,6 +14,9 @@ body{
 input,button,textarea{
   outline: none;
 }
+.hide{
+  display: none !important;
+}
 
 .container{
   position: absolute;
@@ -27,16 +30,22 @@ input,button,textarea{
   margin: 20px auto;
   position: relative;
   box-shadow: 0 0 0 1px #ccc;
-  padding-bottom: 20px;
-  .color-picker{
+  .color-picker-wrap{
     position: absolute;
-    width: 16px;
-    height: 16px;
-    border-radius: 50%;
-    top: 0px;
-    left: 340px;
-    box-shadow: 0 0 0 1px #ccc;
-    background: red;
+    top: 0;
+    left: 0;
+    width: 360px;
+    height: 180px;
+    overflow: hidden;
+    .color-picker{
+      position: absolute;
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      top: -6px;
+      left: 353px;
+      box-shadow: 0 0 0 1px #ccc;
+    }
   }
   .color-block{
     width: 360px;
@@ -53,7 +62,6 @@ input,button,textarea{
       width: 20px;
       height: 20px;
       border-radius: 50%;
-      background: #fff;
       box-shadow: 0 0 0 1px #ddd;
     }
     .icon{
@@ -64,6 +72,56 @@ input,button,textarea{
       left: 0;
     }
   }
+  .switch{
+    width: 24px;
+    height: 24px;
+    position: absolute;
+    top: 257px;
+    right: 25px;
+  }
+  .color-show{
+    list-style: none;
+    width: 320px;
+    height: 40px;
+    margin: 15px auto;
+    li{
+      margin: 5px auto;
+      width: 306px;
+    }
+    input{
+      height: 16px;
+      text-align: center;
+    }
+    p{
+      text-align: center;
+      width: 276px;
+      margin-top: 2px;
+    }
+    .hex{
+      input{
+        width: 48px;
+        padding: 0 112px;
+      }
+    }
+    .rgba,.hsla{
+      input{
+        width: 34px;
+        padding: 0 8px;
+        margin-right: 20px;
+      }
+      span{
+        float: left;
+        display: block;
+        width: 54px;
+        margin-right: 20px;
+        &:last-child{
+          margin-right: 0;
+        }
+      }
+    }
+
+  }
+
   input[type="range"]{
     display: block;
     width: 256px;
