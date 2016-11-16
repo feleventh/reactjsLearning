@@ -56,6 +56,9 @@
       }
       h /= 6;
     }
+    h = h*360;
+    s = parseInt(s*100)+"%";
+    l = parseInt(l*100)+"%";
 
     return [h, s, l];
   }
@@ -86,6 +89,7 @@
         pickRgba:[0,255,255,255],
         x: 359,
         y: 179,
+        hex:'#0ff'
       };
     },
     handleRgbChange: function(event){
@@ -154,7 +158,7 @@
     handleSwitch: function(event){
 //      console.log(this.state.alpha);
       var inputValue = event.target.value;
-      log(inputValue);
+      console.log(inputValue);
       var index = $('.color-show li').index($('.color-show li:not(.hide)'));
       index===2?index=0:index++;
       if(this.state.alpha!==255){
@@ -163,12 +167,85 @@
       console.log(index);
       $('.color-show li').eq(index).removeClass('hide').siblings('li').addClass('hide');
     },
-    handleColorChange: function(){
-      var index = $('.color-show li').index($('.color-show li:not(.hide)'));
-      console.log(index);
+    handleHexChange: function(event){
+
+      var rgb = [];
+      var inputVal = $.trim(event.target.value);
+      this.setState({hex:inputVal});
+//      console.log(inputVal);
+      var pattern1 = /^#[0-9a-fA-F]{3}$/;
+      var pattern2 = /^#[0-9a-fA-F]{6}$/;
+      if(pattern1.test(inputVal)){
+        rgb[0] = parseInt(inputVal.substr(1,1),16)*17;
+        rgb[1] = parseInt(inputVal.substr(2,1),16)*17;
+        rgb[2] = parseInt(inputVal.substr(3,1),16)*17;
+        this.setState({rgba:[rgb[0],rgb[1],rgb[2],255]});
+      }
+      if(pattern2.test(inputVal)){
+        rgb[0] = parseInt(inputVal.substr(1,2),16);
+        rgb[1] = parseInt(inputVal.substr(3,2),16);
+        rgb[2] = parseInt(inputVal.substr(5,2),16);
+        this.setState({rgba:[rgb[0],rgb[1],rgb[2],255]});
+      }
+      console.log(rgb);
+      var max = Math.max.apply(null, rgb);
+      var min = Math.min.apply(null, rgb);
+      var maxIndex = rgb.indexOf(max);
+      var minIndex = rgb.indexOf(min);
+      var rangeVal = '';
+      switch([maxIndex,minIndex].toString()){
+        case '0,1':
+          rangeVal = rgb[2]*255/max;
+          break;
+        case '2,1':
+          rangeVal = 2*255-rgb[0]*255/max;
+          break;
+        case '2,0':
+          rangeVal = 2*255+rgb[1]*255/max;
+          break;
+        case '1,0':
+          rangeVal = 3*255-rgb[2]*255/max;
+          break;
+        case '1,2':
+          rangeVal = 3*255+rgb[0]*255/max;
+          break;
+        case '0,2':
+          rangeVal = 4*255-rgb[1]*255/max;
+          break;
+      }
+      this.setState({value:rangeVal});
+      $('.rgb-range').val(rangeVal);
+
+    },
+    handleRChange: function(event){
+
+    },
+    handleGChange: function(event){
+
+    },
+    handleBChange: function(event){
+
+    },
+    handleAChange: function(event){
+
+    },
+    handleHChange: function(event){
+
+    },
+    handleSChange: function(event){
+
+    },
+    handleLChange: function(event){
+
     },
     componentDidMount: function() {
       renderBlockColor([0,255,255,255])
+    },
+    handleX: function(e){
+      this.setState({x: e.target.value,value:e.target.value});
+    },
+    handleY: function(e){
+      this.setState({x: e.target.value});
     },
     render: function () {
       var value = this.state.value;
@@ -176,12 +253,13 @@
       var rgba = this.state.rgba;
       var x = this.state.x;
       var y = this.state.y;
+      var hex = this.state.hex;
       var pickR = parseInt((255*(1-x/359)+rgba[0]*x/359)*(1-y/179));
       var pickG = parseInt((255*(1-x/359)+rgba[1]*x/359)*(1-y/179));
       var pickB = parseInt((255*(1-x/359)+rgba[2]*x/359)*(1-y/179));
       var color = 'rgba('+pickR+ ','+pickG+ ','+pickB+','+rgba[3]+')';
 //      var hex = '#'+pickR.toString(16)+pickG.toString(16)+pickB.toString(16);
-      var hex = "#0ff";
+      var hsl = rgbToHsl(pickR,pickG,pickB);
       return <div className="color-wrap">
         <canvas className="color-block"></canvas>
         <div className="color-picker-wrap" onClick = {this.handlePickerWrapClick}>
@@ -203,27 +281,30 @@
         <input className="alpha-range" type="range" min="0" step="1" max="255" value={alpha} onChange={this.handleAlphaChange} />
         <ul className="color-show">
           <li className="hex">
-            <input type="text" value={hex} onChange={this.handleColorChange} />
+            <input type="text" value={hex} onChange={this.handleHexChange} />
             <p>HEX</p>
           </li>
           <li className="rgba hide">
-            <input type="text" value={hex} onChange={this.handleColorChange} />
-            <input type="text" value={hex} onChange={this.handleColorChange} />
-            <input type="text" value={hex} onChange={this.handleColorChange} />
-            <input type="text" value={hex} onChange={this.handleColorChange} />
+            <input type="text" value={pickR} onChange={this.handleRChange} />
+            <input type="text" value={pickG} onChange={this.handleGChange} />
+            <input type="text" value={pickB} onChange={this.handleBChange} />
+            <input type="text" value={(alpha/255).toFixed(2)} onChange={this.handleAChange} />
             <p><span>R</span><span>G</span><span>B</span><span>A</span></p>
           </li>
           <li className="hsla hide">
-            <input type="text" value={hex} onChange={this.handleColorChange} />
-            <input type="text" value={hex} onChange={this.handleColorChange} />
-            <input type="text" value={hex} onChange={this.handleColorChange} />
-            <input type="text" value={hex} onChange={this.handleColorChange} />
+            <input type="text" value={hsl[0]} onChange={this.handleHChange} />
+            <input type="text" value={hsl[1]} onChange={this.handleSChange} />
+            <input type="text" value={hsl[2]} onChange={this.handleLChange} />
+            <input type="text" value={(alpha/255).toFixed(2)} onChange={this.handleAChange} />
             <p><span>H</span><span>S</span><span>L</span><span>A</span></p>
           </li>
         </ul>
         <svg className="switch" viewBox="0 0 1024 1024"  width="24" height="24" fill="#515151" onClick={this.handleSwitch}>
           <path d="M512 859.615l-260.711-260.711h521.422z"></path><path d="M512 164.385l-260.711 260.711h521.422z"></path>
         </svg>
+        <input type="text" value={x} onChange={this.handleX}/>
+                <span>{x}</span>
+        <input type="text" value={x} onChange={this.handleY}/>
       </div>;
     }
   });
