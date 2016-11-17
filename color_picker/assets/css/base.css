@@ -87,7 +87,7 @@ input, button, textarea {
       width: 276px;
       margin-top: 2px; }
     .color-wrap .color-show .hex input {
-      width: 48px;
+      width: 50px;
       padding: 0 112px; }
     .color-wrap .color-show .rgba input, .color-wrap .color-show .hsla input {
       width: 34px;
