@@ -127,8 +127,13 @@
       pickRgb[0] = parseInt((255*(1-x/359)+rgba[0]*x/359)*(1-y/179));
       pickRgb[1] = parseInt((255*(1-x/359)+rgba[1]*x/359)*(1-y/179));
       pickRgb[2] = parseInt((255*(1-x/359)+rgba[2]*x/359)*(1-y/179));
-
-      this.setState({rgba:rgba,pickRgb:pickRgb,});
+      this.setState({rgba:rgba,pickRgb:pickRgb,hex:'#'+pickRgb.map(function(cv){
+        if(cv>=16){
+          return cv.toString(16);
+        }else{
+          return '0'+cv.toString(16);
+        }
+      }).join(''),hsl:rgbToHsl(pickRgb[0],pickRgb[1],pickRgb[2])});
 
 
     },
@@ -158,12 +163,19 @@
       $('.color-picker').css({left:x-6,top:y-6});
 
       var rgba = this.state.rgba;
-      var pickR = parseInt((255*(1-x/359)+rgba[0]*x/359)*(1-y/179));
-      var pickG = parseInt((255*(1-x/359)+rgba[1]*x/359)*(1-y/179));
-      var pickB = parseInt((255*(1-x/359)+rgba[2]*x/359)*(1-y/179));
-      var color = 'rgba('+pickR+ ','+pickG+ ','+pickB+','+rgba[3]+')';
+      var pickRgb = [];
+      pickRgb[0] = parseInt((255*(1-x/359)+rgba[0]*x/359)*(1-y/179));
+      pickRgb[1] = parseInt((255*(1-x/359)+rgba[1]*x/359)*(1-y/179));
+      pickRgb[2] = parseInt((255*(1-x/359)+rgba[2]*x/359)*(1-y/179));
+      var color = 'rgba('+pickRgb[0]+ ','+pickRgb[1]+ ','+pickRgb[2]+','+rgba[3]+')';
       $('.circle').css('background',color);
-      this.setState({x:x,y:y});
+      this.setState({x:x,y:y,pickRgb:pickRgb,hex:'#'+pickRgb.map(function(cv){
+        if(cv>=16){
+          return cv.toString(16);
+        }else{
+          return '0'+cv.toString(16);
+        }
+      }).join(''),hsl:rgbToHsl(pickRgb[0],pickRgb[1],pickRgb[2])});
     },
     handleSwitch: function(){
 //      console.log(this.state.alpha);
@@ -236,7 +248,8 @@
       }
       renderBlockColor(this.state.rgba);
       $('.rgb-range').val(rangeVal);
-      this.setState({value:rangeVal,y:parseInt(179-179*max/255),x:parseInt(359-359*min/max),pickRgb:rgb});
+      this.setState({value:rangeVal,y:parseInt(179-179*max/255),x:parseInt(359-359*min/max),pickRgb:rgb,
+        hsl:rgbToHsl(rgb[0],rgb[1],rgb[2])});
 
     },
     handleRgbChange: function(event){
@@ -308,7 +321,7 @@
         }else{
           return '0'+cv.toString(16);
         }
-      }).join('')});
+      }).join(''),hsl:rgbToHsl(rgb[0],rgb[1],rgb[2])});
     },
 
     handleAChange: function(event){
@@ -386,13 +399,7 @@
       });
     },
     componentDidMount: function() {
-      renderBlockColor([0,255,255,255])
-    },
-    handleX: function(e){
-      this.setState({x: e.target.value,value:e.target.value});
-    },
-    handleY: function(e){
-      this.setState({x: e.target.value});
+      renderBlockColor(this.state.rgba);
     },
     render: function () {
       var value = this.state.value;
