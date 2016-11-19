@@ -90,7 +90,6 @@
         y: 0,
         hex:'#0ff',
         hsl:[180,'100%','50%']
-//        a: 1,
       };
     },
     handleValueChange: function(event){//滑动rgb颜色条
@@ -118,7 +117,6 @@
         color = 'rgb(255,'+(255*6-rangeVal)+',0)';
         rgb = [255,255*6-rangeVal,0];
       }
-      console.log(color);
       var rgba = rgb.concat([alpha]);
       renderBlockColor(rgba);
       var x = this.state.x;
@@ -156,10 +154,8 @@
       var y = e.pageY || e.clientY + scrollY;
       var canvasX = $('.color-picker-wrap').offset().left;
       var canvasY = $('.color-picker-wrap').offset().top;
-      //alert('x: ' + x + '\ny: ' + y);
       x = x-canvasX;
       y = y-canvasY;
-      console.log('x: ' + x + '\ny: ' + y);
       $('.color-picker').css({left:x-6,top:y-6});
 
       var rgba = this.state.rgba;
@@ -178,7 +174,6 @@
       }).join(''),hsl:rgbToHsl(pickRgb[0],pickRgb[1],pickRgb[2])});
     },
     handleSwitch: function(){
-//      console.log(this.state.alpha);
       var index = $('.color-show li').index($('.color-show li:not(.hide)'));
       index===2?index=0:index++;
       if(this.state.alpha!==255){
@@ -188,7 +183,6 @@
       $('.color-show li').eq(index).removeClass('hide').siblings('li').addClass('hide');
     },
     handleHexChange: function(event){
-
       var rgb = [];
       var inputVal = $.trim(event.target.value);
       this.setState({hex:inputVal});
@@ -218,7 +212,6 @@
           return index!==maxIndex&&index!==minIndex;
         });
       }
-//      console.log(other);
       var rangeVal = '';
       switch([maxIndex,minIndex].toString()){
         case '0,1':
@@ -250,13 +243,11 @@
       $('.rgb-range').val(rangeVal);
       this.setState({value:rangeVal,y:parseInt(179-179*max/255),x:parseInt(359-359*min/max),pickRgb:rgb,
         hsl:rgbToHsl(rgb[0],rgb[1],rgb[2])});
-
     },
     handleRgbChange: function(event){
       var inputVal = $.trim(event.target.value);
       var index = $(event.target).parent().find('input').index($(event.target));
       var rgb = this.state.pickRgb;
-//      console.log(inputVal=='');
       if(inputVal==''){return rgb[index]='',this.setState({pickRgb:rgb})}
       if(isNaN(inputVal)){return rgb[index]=0,this.setState({pickRgb:rgb})}
 
@@ -272,7 +263,6 @@
       var max = Math.max.apply(null, rgb);
       var min = Math.min.apply(null, rgb);
       var other = '';
-//      console.log(max+' '+min);
       var maxIndex = rgb.indexOf(max);
       var minIndex = rgb.indexOf(min);
       if(max==min){
@@ -347,7 +337,6 @@
       var max = Math.max.apply(null, rgb);
       var min = Math.min.apply(null, rgb);
       var other = '';
-//      console.log(max+' '+min);
       var maxIndex = rgb.indexOf(max);
       var minIndex = rgb.indexOf(min);
       if(max==min){
@@ -404,7 +393,6 @@
     render: function () {
       var value = this.state.value;
       var alpha = this.state.alpha;
-//      var a = this.state.a;
       var x = this.state.x;
       var y = this.state.y;
       var hex = this.state.hex;
