@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+  <title>react props</title>
+  <script src="../build/react.js"></script>
+  <script src="../build/react-dom.js"></script>
+  <script src="../build/browser.min.js"></script>
+  <script src="../build/jquery.min.js"></script>
+</head>
+<body>
+</body>
+<script type="text/babel">
+  var Title = React.createClass({
+    getDefaultProps : function () {
+      return {
+        title : 'Hello World'
+      };
+    },
+    render: function(){
+      return <h1>{this.props.title}</h1>
+    }
+  })
+  ReactDOM.render(<Title/>,document.body)
+</script>
+</html>
